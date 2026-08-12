@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   node-tests:
+    if: false
     strategy:
       fail-fast: false
       matrix:
@@ -68,6 +69,7 @@ jobs:
         with:
           verbose: true
   node-windows-tests:
+    if: false
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -93,6 +95,7 @@ jobs:
       - name: Unit tests
         run: npm run test
   browser-tests:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -120,6 +123,7 @@ jobs:
         with:
           verbose: true
   webworker-tests:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

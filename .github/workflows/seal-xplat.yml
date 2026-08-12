@@ -1,0 +1,94 @@
+name: seal-xplat
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  node-tests:
+    name: 'core unit tests on Node.js ${{ matrix.node }}'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [23, 18, 20, 22, 24, 25]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Compile @opentelemetry/core
+        run: npx nx run @opentelemetry/core:compile
+
+      - name: Test @opentelemetry/core
+        run: npx nx run @opentelemetry/core:test
+
+  pack:
+    name: 'pack @opentelemetry/core tarball'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 23
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Compile @opentelemetry/core
+        run: npx nx run @opentelemetry/core:compile
+
+      - name: Pack tarball
+        run: |
+          mkdir -p dist-out
+          npm pack --workspace=packages/opentelemetry-core --pack-destination=dist-out
+          mv dist-out/opentelemetry-core-2.7.1.tgz dist-out/core-2.7.1.tgz
+
+      - name: Upload tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-tgz
+          path: dist-out/core-2.7.1.tgz
+          if-no-files-found: error
+
+  node-windows-tests:
+    name: 'core unit tests on Windows'
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.1'
+
+      # npm runs lifecycle scripts through its own script-shell (cmd.exe by
+      # default on Windows), which would pass the core `test` script's
+      # single-quoted mocha globs through literally ("No test files found").
+      - name: Use bash as npm script-shell
+        run: npm config set script-shell "C:\\Program Files\\git\\bin\\bash.exe"
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Compile @opentelemetry/core
+        run: npx nx run @opentelemetry/core:compile
+
+      - name: Test @opentelemetry/core
+        run: npx nx run @opentelemetry/core:test

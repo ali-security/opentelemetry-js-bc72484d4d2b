@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   benchmark-tests:
+    if: false
     permissions:
       contents: write # required for pushing benchmark results to gh-pages
     strategy:

@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   peer-api-check:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

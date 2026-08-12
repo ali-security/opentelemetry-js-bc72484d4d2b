@@ -8,6 +8,7 @@ permissions:
 
 jobs:
   npm-publish:
+    if: false
     permissions:
       contents: read
       id-token: write # needed for OIDC and provenance

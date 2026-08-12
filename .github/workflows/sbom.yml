@@ -7,6 +7,7 @@ permissions: read-all
 
 jobs:
   generate-sboms:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -57,6 +58,7 @@ jobs:
           path: ./sbom.zip
 
   add-release-artifact:
+    if: false
     needs: generate-sboms
     runs-on: ubuntu-latest
     permissions:

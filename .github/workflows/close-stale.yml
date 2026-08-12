@@ -8,6 +8,7 @@ permissions:
 
 jobs:
   stale:
+    if: false
     permissions:
       issues: write # required for closing stale issues
       pull-requests: write # required for closing stale PRs
